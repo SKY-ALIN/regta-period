@@ -18,14 +18,23 @@ class AbstractPeriod(ABC):
 
 class Period(AbstractPeriod):
     """There are 3 types of intervals approaches:
-    1. Regular aka. days, minutes, months and so on.
-    2. Calculated aka. Sun, Mon, August, September and so on.
-    3. At specific time.
+    1. [Done] Regular aka. days, minutes, months and so on.
+    2. [] Calculated aka. Sun, Mon, August, September and so on.
+    3. [] At specific time.
     """
 
-    _epoch = datetime.utcfromtimestamp(0)
-    _regular_offset = 0
-    _every = 1
+    _epoch: datetime = datetime.utcfromtimestamp(0)
+    _regular_offset: float = 0.0
+    _every: int = 1
+
+    def __init__(self, days: int = 0, hours: int = 0, minutes: int = 0, seconds: int = 0, milliseconds: int = 0):
+        self._regular_offset = (
+            milliseconds * 0.001
+            + seconds
+            + minutes * 60
+            + hours * 60 * 60
+            + days * 60 * 60 * 24
+        )
 
     def every(self, n: int) -> "Period":
         self._every = n

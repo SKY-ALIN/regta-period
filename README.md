@@ -4,17 +4,18 @@
 It's designed specially for [Regta Framework](https://github.com/SKY-ALIN/regta), 
 but with an ability to use it independently.**
 
-[![pypi](https://img.shields.io/pypi/v/regta-period.svg)](https://pypi.python.org/pypi/regta-period)
 [![versions](https://img.shields.io/pypi/pyversions/regta-period.svg)](https://github.com/SKY-ALIN/regta-period)
-[![license](https://img.shields.io/github/license/SKY-ALIN/regta-period.svg)](https://github.com/SKY-ALIN/regta-period/blob/master/LICENSE)
+[![PyPI version](https://badge.fury.io/py/regta-period.svg)](https://pypi.org/project/regta-period/)
+[![license](https://img.shields.io/github/license/SKY-ALIN/regta-period.svg)](https://github.com/SKY-ALIN/regta-period/blob/main/LICENSE)
 
-### Moment-independence
+### Moment-independence explanation
+
 This term in this context means that relying on this approach we can get the time to time 
 points regardless of the points in which we are.
 ```
          |-----------------|
          t1       t2     moment
-|--------|--------|--------|--------> time
+---------|--------|--------|--------> time
                   |--------|
 ```
 
@@ -22,17 +23,13 @@ Whereas with normal intervals like `datetime.timedelta`, we get an unnecessary o
 ```
          |-----------------|
          t1       t2     moment
-|--------|--------|--------|--------|--------> time
+---------|--------|--------|--------|--------> time
                   |-----------------|
 ```
 
 For example, it is important in the context of the job scheduler, because when the
 scheduler is redeployed or restarted, you can get an unnecessary time shift or
 unnecessary execution of the job.
-
-### Installation
-
-Install using `pip install regta-period` or `poetry add regta-period`
 
 ### Math explanation of moment-independence
 
@@ -47,6 +44,10 @@ from our period the remainder of the division by the period. Final function to c
 time until the next moment since current looks following:
 
 $$\ f(t) = T - ( \Delta t \mod T ) = T - ( ( t - t_{unix} ) \mod T ) $$
+
+### Installation
+
+Install using `pip install regta-period` or `poetry add regta-period`
 
 ---
 
