@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta
-from typing import Tuple, Optional
+from datetime import datetime, timedelta, tzinfo, timezone as datetime_timezone
+from typing import Tuple, Optional, Union
+from zoneinfo import ZoneInfo
+
+utc = datetime_timezone.utc
 
 
 class AbstractPeriod(ABC):
@@ -25,12 +28,14 @@ class Period(AbstractPeriod):
 
     Todo:
         [] Add `.daily`
-        [] Add timezone support `.by(+1)`, `.by(-7)` and so on
+        [Done] Add timezone support `.by(+1)`, `.by(-7)` and so on
     """
 
-    _epoch: datetime = datetime.utcfromtimestamp(0)
-    _regular_offset: float = 0.0
     _every: int = 1
+    _regular_offset: float = 0.0
+    _time_offset: int = 0
+    _timezone_offset: Optional[int] = None
+    _timezone: Optional[tzinfo] = None
 
     def __init__(
             self,
@@ -105,17 +110,34 @@ class Period(AbstractPeriod):
                 "Don't combine intervals which are < days with .at time method."
             )
 
-        offset = hour * 60 * 60 + minute * 60 + second
-        self._epoch = datetime.utcfromtimestamp(offset)
+        self._time_offset = hour * 60 * 60 + minute * 60 + second
 
     def at(self, time: str) -> "Period":
         self._set_time_offset(*self._parse_time(time))
         return self
 
+    def by(self, timezone: Union[tzinfo, str, int, float]) -> "Period":
+        if isinstance(timezone, tzinfo):
+            self._timezone = timezone
+        elif isinstance(timezone, str):
+            self._timezone = ZoneInfo(timezone)
+        elif isinstance(timezone, (int, float)):
+            self._timezone_offset = int(timezone * 60 * 60)
+        else:
+            raise ValueError("Unsupported timezone type")
+        return self
+
+    def _get_initial_offset(self) -> datetime:
+        if self._timezone is not None:
+            return datetime.fromtimestamp(self._time_offset, tz=utc).replace(tzinfo=self._timezone)
+        elif self._timezone_offset is not None:
+            return datetime.fromtimestamp(self._time_offset - self._timezone_offset, tz=utc)
+        else:
+            return datetime.utcfromtimestamp(self._time_offset)
+
     def get_next_seconds(self, dt: datetime) -> float:
-        seconds_since_epoch = (dt - self._epoch).total_seconds()
-        seconds_until_next = self._regular_offset - (seconds_since_epoch % self._regular_offset)
-        return seconds_until_next
+        delta_t = (dt - self._get_initial_offset()).total_seconds()
+        return self._regular_offset - (delta_t % self._regular_offset)
 
     def get_next_timedelta(self, dt: datetime) -> timedelta:
         return timedelta(seconds=self.get_next_seconds(dt))

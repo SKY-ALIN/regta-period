@@ -19,7 +19,7 @@ points regardless of the points in which we are.
                  |--------|
 ```
 
-Whereas with normal intervals like `datetime.timedelta`, we get an unnecessary offset:
+Whereas with the standard intervals like `datetime.timedelta`, we get an unnecessary offset:
 ```
         |-----------------|
         t1       t2     moment
@@ -53,9 +53,9 @@ $$\ f(t) = T - ( \Delta t \mod T ) = T - ( ( t - t_{unix} ) \mod T ) $$
 ### Time Offset
 
 Time offset is stating the exact time e.g. at 9pm, at 12am, at 16:30, etc.
-It works as a shift of the starting point we get a grip on:
+It works as a shift of the starting point in exact time and time zone:
 
-$$\ t_{unix} + \Delta t_{time} $$
+$$\ t_{unix} + \Delta t_{time} + \Delta t_{tz} $$
 
 Note that it's not possible to combine exact time and short regular intervals such as
 hours, minutes and seconds.
