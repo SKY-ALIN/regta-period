@@ -1,7 +1,10 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta, tzinfo, timezone as datetime_timezone
 from typing import Tuple, Optional, Union
-from zoneinfo import ZoneInfo
+try:
+    from zoneinfo import ZoneInfo
+except ImportError:
+    from backports.zoneinfo import ZoneInfo
 
 utc = datetime_timezone.utc
 

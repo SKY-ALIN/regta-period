@@ -1,5 +1,8 @@
 from datetime import datetime, timezone
-from zoneinfo import ZoneInfo
+try:
+    from zoneinfo import ZoneInfo
+except ImportError:
+    from backports.zoneinfo import ZoneInfo
 
 import pytest
 
