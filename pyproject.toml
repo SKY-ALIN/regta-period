@@ -19,6 +19,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = ">=3.7.2,<4.0"
+"backports.weakref" = "^1.0.post1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.0"
