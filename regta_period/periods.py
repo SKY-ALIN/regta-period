@@ -130,10 +130,9 @@ class Period(AbstractPeriod):
     def _get_initial_offset(self) -> datetime:
         if self._timezone is not None:
             return datetime.fromtimestamp(self._time_offset, tz=utc).replace(tzinfo=self._timezone)
-        elif self._timezone_offset is not None:
+        if self._timezone_offset is not None:
             return datetime.fromtimestamp(self._time_offset - self._timezone_offset, tz=utc)
-        else:
-            return datetime.utcfromtimestamp(self._time_offset)
+        return datetime.utcfromtimestamp(self._time_offset)
 
     def get_next_seconds(self, dt: datetime) -> float:
         delta_t = (dt - self._get_initial_offset()).total_seconds()
