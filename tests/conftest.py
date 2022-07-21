@@ -1,8 +1,8 @@
 from datetime import datetime, timezone
 try:
-    from zoneinfo import ZoneInfo
-except ImportError:
-    from backports.zoneinfo import ZoneInfo
+    import zoneinfo
+except ImportError:  # Backward compatibility for python < 3.9
+    from backports import zoneinfo
 
 import pytest
 
@@ -19,4 +19,4 @@ def utc():
 
 @pytest.fixture
 def utc7():
-    return ZoneInfo('Asia/Tomsk')
+    return zoneinfo.ZoneInfo('Asia/Tomsk')

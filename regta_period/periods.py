@@ -2,9 +2,9 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta, tzinfo, timezone as datetime_timezone
 from typing import Tuple, Optional, Union
 try:
-    from zoneinfo import ZoneInfo
-except ImportError:
-    from backports.zoneinfo import ZoneInfo
+    import zoneinfo
+except ImportError:  # Backward compatibility for python < 3.9
+    from backports import zoneinfo
 
 utc = datetime_timezone.utc
 
@@ -123,7 +123,7 @@ class Period(AbstractPeriod):
         if isinstance(timezone, tzinfo):
             self._timezone = timezone
         elif isinstance(timezone, str):
-            self._timezone = ZoneInfo(timezone)
+            self._timezone = zoneinfo.ZoneInfo(timezone)
         elif isinstance(timezone, (int, float)):
             self._timezone_offset = int(timezone * 60 * 60)
         else:
