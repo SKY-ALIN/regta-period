@@ -15,6 +15,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Set up Python ${{ matrix.python-version }}
+      id: setup-python
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
@@ -35,10 +36,17 @@ jobs:
 
     - name: Install dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction
+      run: poetry install --no-interaction --no-root
 
     - name: Install library
       run: poetry install --no-interaction
+
+    - name: Install backports
+      if: matrix.python-version == '3.7' || matrix.python-version == '3.8'
+      run: |
+        source .venv/bin/activate
+        pip install --upgrade pip
+        pip install backports.zoneinfo[tzdata];python_version<"3.9"
 
     - name: Test with pytest
       run: poetry run pytest --cov=regta_period --cov-report=xml tests/
