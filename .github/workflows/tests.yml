@@ -44,9 +44,8 @@ jobs:
     - name: Install backports
       if: matrix.python-version == '3.7' || matrix.python-version == '3.8'
       run: |
-        source .venv/bin/activate
-        pip install --upgrade pip
-        pip install backports.zoneinfo[tzdata];python_version<"3.9"
+        poetry run pip install --upgrade pip
+        poetry run pip install backports.zoneinfo[tzdata]
 
     - name: Test with pytest
       run: poetry run pytest --cov=regta_period --cov-report=xml tests/
@@ -54,4 +53,4 @@ jobs:
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
       with:
-        fail_ci_if_error: true
+        fail_ci_if_error: false
