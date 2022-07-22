@@ -11,7 +11,7 @@ def _assert(p_utc: Period, p_tomsk: Period, dt_utc: datetime, dt_tomsk: datetime
 
 
 def test_timezone_with_exact_time(utc, utc7):
-    p_utc = Period(days=1).at("10:30").by('utc')
+    p_utc = Period(days=1).at("10:30").by(utc)
     dt_utc = datetime(year=2000, month=1, day=10, hour=9, minute=0, second=0, tzinfo=utc)
     p_tomsk = Period(days=1).at("10:30").by('Asia/Tomsk')  # UTC+7
     dt_tomsk = datetime(year=2000, month=1, day=10, hour=9, minute=0, second=0, tzinfo=utc7)

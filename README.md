@@ -5,6 +5,7 @@ It's designed specially for [Regta Framework](https://github.com/SKY-ALIN/regta)
 but with an ability to use it independently.**
 
 [![versions](https://img.shields.io/pypi/pyversions/regta-period.svg)](https://github.com/SKY-ALIN/regta-period)
+![Tests](https://github.com/SKY-ALIN/regta_period/actions/workflows/tests.yml/badge.svg)
 ![Code Quality](https://github.com/SKY-ALIN/regta-period/actions/workflows/code-quality.yml/badge.svg)
 [![PyPI version](https://badge.fury.io/py/regta-period.svg)](https://pypi.org/project/regta-period/)
 [![license](https://img.shields.io/github/license/SKY-ALIN/regta-period.svg)](https://github.com/SKY-ALIN/regta-period/blob/main/LICENSE)
@@ -64,6 +65,8 @@ hours, minutes and seconds.
 ## Installation
 
 Install using `pip install regta-period` or `poetry add regta-period`
+
+If you use python < 3.9, then also install backports: `pip install "backports.zoneinfo[tzdata]"`
 
 ---
 

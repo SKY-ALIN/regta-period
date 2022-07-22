@@ -35,20 +35,6 @@ tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)"
 tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins", "cloudpickle"]
 
 [[package]]
-name = "backports.zoneinfo"
-version = "0.2.1"
-description = "Backport of the standard library zoneinfo module"
-category = "main"
-optional = false
-python-versions = ">=3.6"
-
-[package.dependencies]
-tzdata = {version = "*", optional = true, markers = "extra == \"tzdata\""}
-
-[package.extras]
-tzdata = ["tzdata"]
-
-[[package]]
 name = "colorama"
 version = "0.4.5"
 description = "Cross-platform colored terminal text."
@@ -315,14 +301,6 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
-name = "tzdata"
-version = "2022.1"
-description = "Provider of IANA time zone data"
-category = "main"
-optional = false
-python-versions = ">=2"
-
-[[package]]
 name = "wrapt"
 version = "1.14.1"
 description = "Module for decorators, wrappers and monkey patching."
@@ -345,7 +323,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7.2,<4.0"
-content-hash = "aabb4cafc3a0bbf63e10e2bb63aab14261a4c7f5892f136174cf6f2a6b064a03"
+content-hash = "8df6bdafaffd973b2081adf090ae1bc32af5f10e1ead2b5846719a94e1a6c08d"
 
 [metadata.files]
 astroid = []
@@ -354,7 +332,6 @@ attrs = [
     {file = "attrs-21.4.0-py2.py3-none-any.whl", hash = "sha256:2d27e3784d7a565d36ab851fe94887c5eccd6a463168875832a1be79c82828b4"},
     {file = "attrs-21.4.0.tar.gz", hash = "sha256:626ba8234211db98e869df76230a137c4c40a12d72445c45d5f5b716f076e2fd"},
 ]
-"backports.zoneinfo" = []
 colorama = []
 coverage = []
 dill = []
@@ -458,7 +435,6 @@ tomli = [
 tomlkit = []
 typed-ast = []
 typing-extensions = []
-tzdata = []
 wrapt = [
     {file = "wrapt-1.14.1-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:1b376b3f4896e7930f1f772ac4b064ac12598d1c38d04907e696cc4d794b43d3"},
     {file = "wrapt-1.14.1-cp27-cp27m-manylinux1_i686.whl", hash = "sha256:903500616422a40a98a5a3c4ff4ed9d0066f3b4c951fa286018ecdf0750194ef"},
