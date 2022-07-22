@@ -7,6 +7,7 @@ but with an ability to use it independently.**
 [![versions](https://img.shields.io/pypi/pyversions/regta-period.svg)](https://github.com/SKY-ALIN/regta-period)
 ![Tests](https://github.com/SKY-ALIN/regta-period/actions/workflows/tests.yml/badge.svg)
 ![Code Quality](https://github.com/SKY-ALIN/regta-period/actions/workflows/code-quality.yml/badge.svg)
+[![codecov](https://codecov.io/gh/SKY-ALIN/regta-period/branch/main/graph/badge.svg?token=NR7AKLXN5H)](https://codecov.io/gh/SKY-ALIN/regta-period)
 [![PyPI version](https://badge.fury.io/py/regta-period.svg)](https://pypi.org/project/regta-period/)
 [![license](https://img.shields.io/github/license/SKY-ALIN/regta-period.svg)](https://github.com/SKY-ALIN/regta-period/blob/main/LICENSE)
 
