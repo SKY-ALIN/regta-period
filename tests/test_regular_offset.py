@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 
 from regta_period import Period
 
+from .test_at_time import _assert_creation
+
 
 def test_by_every_setup():
     s1 = 3 * 60 * 60 + 30 * 60 - 15
@@ -56,32 +58,12 @@ def test_by_init_setup():
 
 
 def test_daily_and_hourly():
-    try:
-        _ = Period().daily.hourly
-    except ValueError:
-        assert True
-    else:
-        assert False
-
-    try:
-        _ = Period().every(3).minutes.hourly
-    except ValueError:
-        assert True
-    else:
-        assert False
-
-    try:
-        _ = Period().every(3).minutes.daily
-    except ValueError:
-        assert True
-    else:
-        assert False
+    _assert_creation(lambda: Period().daily.hourly, reverse=True)
+    _assert_creation(lambda: Period().every(3).minutes.hourly, reverse=True)
+    _assert_creation(lambda: Period().every(3).minutes.daily, reverse=True)
 
     s = 3 * 60 * 60 - 15
     dt = datetime.utcfromtimestamp(s)
 
-    p1 = Period().hourly
-    assert p1.get_next_seconds(dt) == 15
-
-    p1 = Period().daily
-    assert p1.get_next_timedelta(dt) == timedelta(hours=21, minutes=0, seconds=15)
+    assert Period().hourly.get_next_seconds(dt) == 15
+    assert Period().daily.get_next_timedelta(dt) == timedelta(hours=21, minutes=0, seconds=15)

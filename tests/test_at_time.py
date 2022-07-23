@@ -1,59 +1,29 @@
 from datetime import datetime
+from typing import Callable
 
 from regta_period import Period
 
 
+def _assert_creation(f: Callable[..., Period], reverse: bool = False):
+    try:
+        f()
+    except ValueError:
+        assert reverse
+    else:
+        assert not reverse
+
+
 def test_wrong_combination_of_time_and_interval():
-    try:
-        Period().every(12).hours.at("12:00")
-    except ValueError:
-        assert True
-    else:
-        assert False
-
-    try:
-        Period().every(12).hours.at("24:00")
-    except ValueError:
-        assert True
-    else:
-        assert False
-
-    try:
-        Period().every(2).days.AND.every(12).hours.at("12:00")
-    except ValueError:
-        assert True
-    else:
-        assert False
-
-    try:
-        Period().every(2).days.AND.every(12).hours.at("00:00")
-    except ValueError:
-        assert True
-    else:
-        assert False
+    _assert_creation(lambda: Period().every(12).hours.at("12:00"), reverse=True)
+    _assert_creation(lambda: Period().every(12).hours.at("24:00"), reverse=True)
+    _assert_creation(lambda: Period().every(2).days.AND.every(12).hours.at("12:00"), reverse=True)
+    _assert_creation(lambda: Period().every(2).days.AND.every(12).hours.at("00:00"), reverse=True)
 
 
 def test_correct_combination_of_time_and_interval():
-    try:
-        Period().every(2).days.at("12:00")
-    except ValueError:
-        assert False
-    else:
-        assert True
-
-    try:
-        Period().every(24).hours.at("12:12")
-    except ValueError:
-        assert False
-    else:
-        assert True
-
-    try:
-        Period().every(24).hours.at("24:00")
-    except ValueError:
-        assert False
-    else:
-        assert True
+    _assert_creation(lambda: Period().every(2).days.at("12:00"))
+    _assert_creation(lambda: Period().every(24).hours.at("12:12"))
+    _assert_creation(lambda: Period().every(24).hours.at("24:00"))
 
 
 def test_at_time(unix: datetime):

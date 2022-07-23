@@ -6,3 +6,9 @@ score=no
 
 [FORMAT]
 max-line-length=120
+
+[SIMILARITIES]
+min-similarity-lines=4
+ignore-comments=yes
+ignore-docstrings=yes
+ignore-imports=no
