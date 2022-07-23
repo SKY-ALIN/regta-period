@@ -53,3 +53,35 @@ def test_by_init_setup():
     assert p.get_next_seconds(dt2) == s2
     assert p.get_next_timedelta(dt2) == timedelta(seconds=s2)
     assert p.get_next_datetime(dt2) == dt2 + timedelta(seconds=s2)
+
+
+def test_daily_and_hourly():
+    try:
+        _ = Period().daily.hourly
+    except ValueError:
+        assert True
+    else:
+        assert False
+
+    try:
+        _ = Period().every(3).minutes.hourly
+    except ValueError:
+        assert True
+    else:
+        assert False
+
+    try:
+        _ = Period().every(3).minutes.daily
+    except ValueError:
+        assert True
+    else:
+        assert False
+
+    s = 3 * 60 * 60 - 15
+    dt = datetime.utcfromtimestamp(s)
+
+    p1 = Period().hourly
+    assert p1.get_next_seconds(dt) == 15
+
+    p1 = Period().daily
+    assert p1.get_next_timedelta(dt) == timedelta(hours=21, minutes=0, seconds=15)

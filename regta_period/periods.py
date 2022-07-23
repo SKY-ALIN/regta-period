@@ -30,7 +30,7 @@ class Period(AbstractPeriod):
     3. [Done] At specific time.
 
     Todo:
-        [] Add `.daily`
+        [Done] Add `.daily` and `.hourly`
         [Done] Add timezone support `.by(+1)`, `.by(-7)` and so on
     """
 
@@ -81,6 +81,20 @@ class Period(AbstractPeriod):
     @property
     def days(self) -> "Period":
         self._regular_offset += self._every * 60 * 60 * 24
+        return self
+
+    @property
+    def hourly(self) -> "Period":
+        if self._regular_offset:
+            raise ValueError("Can't combine .hourly and other regular interval attributes")
+        self._regular_offset = 60 * 60
+        return self
+
+    @property
+    def daily(self) -> "Period":
+        if self._regular_offset:
+            raise ValueError("Can't combine .daily and other regular interval attributes")
+        self._regular_offset = 60 * 60 * 24
         return self
 
     @property
