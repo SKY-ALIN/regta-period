@@ -1,10 +1,13 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta, tzinfo, timezone as datetime_timezone
-from typing import Tuple, Optional, Union
+from typing import Dict, Tuple, Optional, Union, Set, Iterable
+
 try:
     import zoneinfo
 except ImportError:  # Backward compatibility for python < 3.9
     from backports import zoneinfo
+
+from .enums import Weekdays
 
 utc = datetime_timezone.utc
 
@@ -24,21 +27,12 @@ class AbstractPeriod(ABC):
 
 
 class Period(AbstractPeriod):
-    """There are 3 types of intervals approaches:
-    1. [Done] Regular aka. days, minutes, months and so on.
-    2. [] Calculated aka. Sun, Mon, August, September and so on.
-    3. [Done] At specific time.
-
-    Todo:
-        [Done] Add `.daily` and `.hourly`
-        [Done] Add timezone support `.by(+1)`, `.by(-7)` and so on
-    """
-
     _every: int = 1
     _regular_offset: float = 0.0
     _time_offset: int = 0
     _timezone_offset: Optional[int] = None
     _timezone: Optional[tzinfo] = None
+    _weekdays: Optional[Set[Weekdays]] = None
 
     def __init__(
             self,
@@ -48,6 +42,7 @@ class Period(AbstractPeriod):
             seconds: int = 0,
             milliseconds: int = 0,
             time: Optional[str] = None,
+            weekdays: Optional[Iterable[Weekdays]] = None,
     ):
         self._regular_offset = (
             milliseconds * 0.001
@@ -58,6 +53,7 @@ class Period(AbstractPeriod):
         )
         if time is not None:
             self._set_time_offset(*self._parse_time(time))
+        self._weekdays = set(weekdays) if weekdays is not None else set()
 
     def every(self, n: int) -> "Period":
         self._every = n
@@ -87,14 +83,69 @@ class Period(AbstractPeriod):
     def hourly(self) -> "Period":
         if self._regular_offset:
             raise ValueError("Can't combine .hourly and other regular interval attributes")
-        self._regular_offset = 60 * 60
+        self._regular_offset = 60.0 * 60
         return self
 
     @property
     def daily(self) -> "Period":
         if self._regular_offset:
             raise ValueError("Can't combine .daily and other regular interval attributes")
-        self._regular_offset = 60 * 60 * 24
+        self._regular_offset = 60.0 * 60 * 24
+        return self
+
+    @property
+    def on(self) -> "Period":
+        return self
+
+    @property
+    def monday(self) -> "Period":
+        self._weekdays.add(Weekdays.MONDAY)
+        return self
+
+    @property
+    def tuesday(self) -> "Period":
+        self._weekdays.add(Weekdays.TUESDAY)
+        return self
+
+    @property
+    def wednesday(self) -> "Period":
+        self._weekdays.add(Weekdays.WEDNESDAY)
+        return self
+
+    @property
+    def thursday(self) -> "Period":
+        self._weekdays.add(Weekdays.THURSDAY)
+        return self
+
+    @property
+    def friday(self) -> "Period":
+        self._weekdays.add(Weekdays.FRIDAY)
+        return self
+
+    @property
+    def saturday(self) -> "Period":
+        self._weekdays.add(Weekdays.SATURDAY)
+        return self
+
+    @property
+    def sunday(self) -> "Period":
+        self._weekdays.add(Weekdays.SUNDAY)
+        return self
+
+    @property
+    def weekdays(self) -> "Period":
+        self._weekdays.update({
+            Weekdays.MONDAY,
+            Weekdays.TUESDAY,
+            Weekdays.WEDNESDAY,
+            Weekdays.THURSDAY,
+            Weekdays.FRIDAY,
+        })
+        return self
+
+    @property
+    def weekends(self) -> "Period":
+        self._weekdays.update({Weekdays.SATURDAY, Weekdays.SUNDAY})
         return self
 
     @property
@@ -144,36 +195,46 @@ class Period(AbstractPeriod):
             raise ValueError("Unsupported timezone type")
         return self
 
-    def _get_initial_offset(self) -> datetime:
+    def _get_initial_datetime(self) -> datetime:
         if self._timezone is not None:
             return datetime.fromtimestamp(self._time_offset, tz=utc).replace(tzinfo=self._timezone)
         if self._timezone_offset is not None:
             return datetime.fromtimestamp(self._time_offset - self._timezone_offset, tz=utc)
         return datetime.utcfromtimestamp(self._time_offset)
 
-    def get_next_seconds(self, dt: datetime) -> float:
-        delta_t = (dt - self._get_initial_offset()).total_seconds()
-        return self._regular_offset - (delta_t % self._regular_offset)
+    def get_next_datetime(self, dt: datetime) -> datetime:
+        delta_t = (dt - self._get_initial_datetime()).total_seconds()
+        # if _regular_offset is not specified, calculate as .daily
+        regular_offset = self._regular_offset or 60.0 * 60 * 24
+        next_seconds = regular_offset - (delta_t % regular_offset)
+
+        res = dt + timedelta(seconds=next_seconds)
+
+        if self._weekdays and Weekdays.get(res) not in self._weekdays:
+            return self.get_next_datetime(res)
+
+        return res
 
     def get_next_timedelta(self, dt: datetime) -> timedelta:
-        return timedelta(seconds=self.get_next_seconds(dt))
+        return self.get_next_datetime(dt) - dt
 
-    def get_next_datetime(self, dt: datetime) -> datetime:
-        return dt + self.get_next_timedelta(dt)
+    def get_next_seconds(self, dt: datetime) -> float:
+        return self.get_next_timedelta(dt).total_seconds()
 
     def __repr__(self):
-        timezone = (
-            f", timezone={self._timezone}"
-            if self._timezone is not None
-            else f", timezone_offset={self._timezone_offset}s"
-            if self._timezone_offset is not None
-            else ""
-        )
-        return (
-            f"<{self.__class__.__name__}: "
-            f"regular_offset={self._regular_offset}s, "
-            f"time_offset={self._time_offset}s{timezone}>"
-        )
+        data: Dict[str, str] = {
+            "regular_offset": f"{self._regular_offset or 60.0 * 60 * 24}s",
+            "time_offset": f"{self._time_offset}s",
+        }
+        if self._timezone is not None:
+            data["timezone"] = str(self._timezone)
+        elif self._timezone_offset is not None:
+            data["timezone_offset"] = f"{self._timezone_offset}s"
+        if self._weekdays:
+            data["weekdays"] = ",".join(map(lambda x: x.name.capitalize(), self._weekdays))
+
+        data_str = ", ".join(f"{key}={value}" for key, value in data.items())
+        return f"<{self.__class__.__name__}: {data_str}>"
 
 
 class PeriodAggregation(AbstractPeriod):

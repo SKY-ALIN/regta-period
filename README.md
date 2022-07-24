@@ -47,7 +47,7 @@ $t$ is the current moment. Then, time since epoch is:
 
 $$\ \Delta t = t - t_{unix} $$
 
-Let $T$ be our period. Thus, to calculate time until the next moment we must subtract
+Let $T$ be our regular period. Thus, to calculate time until the next moment we must subtract
 from our period the remainder of the division by the period. Final function to calculate
 time until the next moment since current looks following:
 
