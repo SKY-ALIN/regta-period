@@ -161,6 +161,20 @@ class Period(AbstractPeriod):
     def get_next_datetime(self, dt: datetime) -> datetime:
         return dt + self.get_next_timedelta(dt)
 
+    def __repr__(self):
+        timezone = (
+            f", timezone={self._timezone}"
+            if self._timezone is not None
+            else f", timezone_offset={self._timezone_offset}s"
+            if self._timezone_offset is not None
+            else ""
+        )
+        return (
+            f"<{self.__class__.__name__}: "
+            f"regular_offset={self._regular_offset}s, "
+            f"time_offset={self._time_offset}s{timezone}>"
+        )
+
 
 class PeriodAggregation(AbstractPeriod):
     pass
