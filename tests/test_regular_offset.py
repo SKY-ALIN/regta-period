@@ -21,7 +21,7 @@ def test_by_every_setup():
     assert p.get_next_datetime(dt2) == dt2 + timedelta(seconds=s2)
 
     # The same, but with __and__ magic method
-    p = Period().every(3).hours & Period().every(30).minutes
+    p = Period().every(3).hours + Period().every(30).minutes
     assert p.get_next_seconds(dt1) == 15
     assert p.get_next_timedelta(dt1) == timedelta(seconds=15)
     assert p.get_next_datetime(dt1) == dt1 + timedelta(seconds=15)
@@ -47,7 +47,7 @@ def test_by_init_setup():
     assert p.get_next_datetime(dt2) == dt2 + timedelta(seconds=s2)
 
     # The same, but with __and__ magic method
-    p = Period(hours=3) & Period(minutes=30)
+    p = Period(hours=3) + Period(minutes=30)
     assert p.get_next_seconds(dt1) == 15
     assert p.get_next_timedelta(dt1) == timedelta(seconds=15)
     assert p.get_next_datetime(dt1) == dt1 + timedelta(seconds=15)

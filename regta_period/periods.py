@@ -148,14 +148,6 @@ class Period(AbstractPeriod):
         self._weekdays.update({Weekdays.SATURDAY, Weekdays.SUNDAY})
         return self
 
-    @property
-    def AND(self) -> "Period":
-        return self
-
-    def __and__(self, other: "Period") -> "Period":
-        self._regular_offset += other._regular_offset
-        return self
-
     @staticmethod
     def _parse_time(time: str) -> Tuple[int, int, int]:
         values = tuple(map(int, time.split(":")))
@@ -221,6 +213,30 @@ class Period(AbstractPeriod):
     def get_next_seconds(self, dt: datetime) -> float:
         return self.get_next_timedelta(dt).total_seconds()
 
+    @property
+    def AND(self) -> "Period":
+        return self
+
+    def __add__(self, other: "Period") -> "Period":
+        if self._time_offset != other._time_offset:
+            raise ValueError(
+                "Can't sum periods with different time. "
+                "Hint: try to use | instead"
+            )
+        if self._timezone != other._timezone or self._timezone_offset != other._timezone_offset:
+            raise ValueError(
+                "Can't sum periods with different timezone. "
+                "Hint: try to use operator `|` or property `.OR` instead"
+            )
+        self._regular_offset += other._regular_offset
+        self._weekdays.update(other._weekdays)
+        return self
+
+    def __or__(self, other: Union["Period", "PeriodAggregation"]) -> "PeriodAggregation":
+        if isinstance(other, Period):
+            return PeriodAggregation(self, other)
+        return PeriodAggregation(self, *other.periods)
+
     def __repr__(self):
         data: Dict[str, str] = {
             "regular_offset": f"{self._regular_offset or 60.0 * 60 * 24}s",
@@ -238,4 +254,30 @@ class Period(AbstractPeriod):
 
 
 class PeriodAggregation(AbstractPeriod):
-    pass
+    def __init__(self, *periods: Period):
+        if not periods:
+            raise ValueError("No period has been passed")
+        self.periods = periods
+
+    def get_next_datetime(self, dt: datetime) -> datetime:
+        return min(map(lambda period: period.get_next_datetime(dt), self.periods))
+
+    def get_next_timedelta(self, dt: datetime) -> timedelta:
+        return self.get_next_datetime(dt) - dt
+
+    def get_next_seconds(self, dt: datetime) -> float:
+        return self.get_next_timedelta(dt).total_seconds()
+
+    def __or__(self, other: Union["Period", "PeriodAggregation"]) -> "PeriodAggregation":
+        if isinstance(other, Period):
+            return PeriodAggregation(*self.periods, other)
+        return PeriodAggregation(*self.periods, *other.periods)
+
+    def __dir__(self) -> Iterable[str]:
+        return sorted(set(dir(PeriodAggregation)) | set(dir(Period)))
+
+    def __getattr__(self, attr):
+        return getattr(self.periods[-1], attr)
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__}: {' OR '.join(map(repr, self.periods))}>"
