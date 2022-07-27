@@ -217,6 +217,10 @@ class Period(AbstractPeriod):
     def AND(self) -> "Period":
         return self
 
+    @property
+    def OR(self) -> "PeriodAggregation":
+        return PeriodAggregation(self, Period())
+
     def __add__(self, other: "Period") -> "Period":
         if self._time_offset != other._time_offset:
             raise ValueError(
@@ -268,6 +272,10 @@ class PeriodAggregation(AbstractPeriod):
     def get_next_seconds(self, dt: datetime) -> float:
         return self.get_next_timedelta(dt).total_seconds()
 
+    @property
+    def OR(self) -> "PeriodAggregation":
+        return PeriodAggregation(*self.periods, Period())
+
     def __or__(self, other: Union["Period", "PeriodAggregation"]) -> "PeriodAggregation":
         if isinstance(other, Period):
             return PeriodAggregation(*self.periods, other)
@@ -277,7 +285,16 @@ class PeriodAggregation(AbstractPeriod):
         return sorted(set(dir(PeriodAggregation)) | set(dir(Period)))
 
     def __getattr__(self, attr):
-        return getattr(self.periods[-1], attr)
+        _attr = getattr(self.periods[-1], attr)
+
+        if isinstance(getattr(Period, attr), property):
+            return self
+
+        def wrapper(*args, **kwargs):
+            _attr(*args, **kwargs)
+            return self
+
+        return wrapper
 
     def __repr__(self):
         return f"<{self.__class__.__name__}: {' OR '.join(map(repr, self.periods))}>"

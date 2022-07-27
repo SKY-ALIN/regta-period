@@ -21,3 +21,8 @@ def test_direct_creation(unix: datetime):
 def test_magic_creation(unix: datetime):
     p = Period().daily.at("16:00") | Period().on.thursday.at("11:00") | Period().on.monday.at("9:00")
     _assert(p, unix)
+
+
+def test_dot_or_creation(unix: datetime):
+    p = Period().daily.at("16:00").OR.on.thursday.at("11:00").OR.on.monday.at("9:00")
+    _assert(p, unix)
