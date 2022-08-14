@@ -1,7 +1,7 @@
 # regta-period
 
 **Library to make moment-independent periods in python.
-It's designed specially for [Regta Framework](https://github.com/SKY-ALIN/regta), 
+It's designed especially for [Regta Framework](https://github.com/SKY-ALIN/regta), 
 but with an ability to use it independently.**
 
 [![versions](https://img.shields.io/pypi/pyversions/regta-period.svg)](https://github.com/SKY-ALIN/regta-period)
@@ -43,7 +43,7 @@ $n_2$ hours, $n_3$ minutes, $n_4$ seconds, but with the moment-independence idea
 
 Essentially, it works as a remainder of the time division from the Unix epoch.
 Let $t_{unix}$ be the moment of the Unix epoch, a moment that we can get a grip on.
-$t$ is the current moment. Then, time since epoch is:
+$t$ is the current moment. Then, the time since epoch is:
 
 $$\ \Delta t = t - t_{unix} $$
 
@@ -55,18 +55,18 @@ $$\ f(t) = T - ( \Delta t \mod T ) = T - ( ( t - t_{unix} ) \mod T ) $$
 
 ### Time Offset
 
-Time offset is stating the exact time e.g. at 9pm, at 12am, at 16:30, etc.
-It works as a shift of the starting point in exact time and time zone:
+Time offset is stating the exact time e.g. at 9 pm, at 12 am, at 16:30, etc.
+It works as a shift of the starting point in the exact time and time zone:
 
 $$\ t_{unix} + \Delta t_{time} + \Delta t_{tz} $$
 
 Note that it's not possible to combine exact time and short regular intervals such as
-hours, minutes and seconds.
+hours, minutes, and seconds.
 
 ### Time Windows
 
 Time window is a static time frame in which the result should be included e.g. every Monday, every June, etc. 
-A window may be from $t_{min}$ to $t_{max}$, then function result must be included in interval:
+A window may be from $t_{min}$ to $t_{max}$, then function result must be included in this interval:
 
 $$ t + f(t) \in [t_{min}, t_{max}] $$
 
@@ -83,7 +83,55 @@ If you use python < 3.9, then also install backports: `pip install "backports.zo
 
 ## Examples
 
-...
+There are two ways to create periods: old style and hipster style:
+
+```python
+from datetime import datetime, timezone
+from regta_period import Period
+
+# Hipster style
+p = Period().every(3).days.at("17:00").by("Europe/Moscow")
+
+# Old style
+p = Period(days=3, time="17:00", timezone="Europe/Moscow")
+
+# <Period: regular_offset=259200.0s, time_offset=61200s, timezone=Europe/Moscow>
+# Every 3 days at 5 pm by Moscow time
+
+t = datetime.now(tz=timezone.utc)
+seconds_to_the_next_moment = p.get_next_seconds(t)
+```
+
+You also may combine a few periods to a single object with the same interface:
+
+```python
+from datetime import datetime
+from regta_period import Period, PeriodAggregation, Weekdays
+
+# Hipster style
+p = Period().on.weekdays.at("18:00") | Period().on.weekends.at("21:00")
+# You also may replace `|` with `.OR` to write shorter and more human-readable
+p = Period().on.weekdays.at("18:00").OR.on.weekends.at("21:00")
+
+# Old style:
+p = PeriodAggregation(
+    Period(
+        weekdays=[Weekdays.MONDAY, Weekdays.TUESDAY, Weekdays.WEDNESDAY, Weekdays.THURSDAY, Weekdays.FRIDAY],
+        time="18:00",
+    ),
+    Period(
+        weekdays=[Weekdays.SATURDAY, Weekdays.SUNDAY],
+        time="21:00",
+    ),
+)
+
+# All of the above will give the same result:
+# <PeriodAggregation: <Period: regular_offset=86400.0s, time_offset=64800s, weekdays=Tuesday,Monday,Thursday,Wednesday,Friday> OR <Period: regular_offset=86400.0s, time_offset=75600s, weekdays=Sunday,Saturday>>
+# At 6 pm on weekdays (Monday-Friday) and at 9 pm on weekends (Saturday-Sunday)
+
+t = datetime.now()
+seconds_to_the_next_moment = p.get_next_seconds(t)
+```
 
 ---
 
