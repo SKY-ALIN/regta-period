@@ -42,6 +42,7 @@ class Period(AbstractPeriod):
             seconds: int = 0,
             milliseconds: int = 0,
             time: Optional[str] = None,
+            timezone: Optional[Union[tzinfo, str, int, float]] = None,
             weekdays: Optional[Iterable[Weekdays]] = None,
     ):
         self._regular_offset = (
@@ -53,6 +54,8 @@ class Period(AbstractPeriod):
         )
         if time is not None:
             self._set_time_offset(*self._parse_time(time))
+        if timezone is not None:
+            self._set_timezone(timezone)
         self._weekdays = set(weekdays) if weekdays is not None else set()
 
     def every(self, n: int) -> "Period":
@@ -176,7 +179,7 @@ class Period(AbstractPeriod):
         self._set_time_offset(*self._parse_time(time))
         return self
 
-    def by(self, timezone: Union[tzinfo, str, int, float]) -> "Period":
+    def _set_timezone(self, timezone: Union[tzinfo, str, int, float]) -> None:
         if isinstance(timezone, tzinfo):
             self._timezone = timezone
         elif isinstance(timezone, str):
@@ -185,6 +188,9 @@ class Period(AbstractPeriod):
             self._timezone_offset = int(timezone * 60 * 60)
         else:
             raise ValueError("Unsupported timezone type")
+
+    def by(self, timezone: Union[tzinfo, str, int, float]) -> "Period":
+        self._set_timezone(timezone)
         return self
 
     def _get_initial_datetime(self) -> datetime:
