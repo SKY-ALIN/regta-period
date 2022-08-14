@@ -22,6 +22,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx_copybutton",
+    "m2r2",
 ]
 
 autodoc_default_options = {

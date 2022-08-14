@@ -13,6 +13,7 @@ Overview
    :caption: Development
    :hidden:
 
+   changelog
    license
    GitHub Repository <https://github.com/SKY-ALIN/regta-period>
    PyPI Page <https://pypi.org/project/regta-period/>
