@@ -1,5 +1,5 @@
-Welcome to regta-period's documentation!
-========================================
+Overview
+========
 
 .. toctree::
    :maxdepth: 2
@@ -13,5 +13,6 @@ Welcome to regta-period's documentation!
    :caption: Development
    :hidden:
 
+   license
    GitHub Repository <https://github.com/SKY-ALIN/regta-period>
    PyPI Page <https://pypi.org/project/regta-period/>
