@@ -11,7 +11,7 @@ but with an ability to use it independently.**
 [![PyPI version](https://badge.fury.io/py/regta-period.svg)](https://pypi.org/project/regta-period/)
 [![license](https://img.shields.io/github/license/SKY-ALIN/regta-period.svg)](https://github.com/SKY-ALIN/regta-period/blob/main/LICENSE)
 
-## Moment-Independence Explanation
+## Moment-Independence Idea Explanation
 
 This term in this context means that relying on this approach we can get the time to time 
 points regardless of the points in which we are.
@@ -63,11 +63,27 @@ $$\ t_{unix} + \Delta t_{time} + \Delta t_{tz} $$
 Note that it's not possible to combine exact time and short regular intervals such as
 hours, minutes and seconds.
 
+### Time Windows
+
+Time window is a static time frame in which the result should be included e.g. every Monday, every June, etc. 
+A window may be from $t_{min}$ to $t_{max}$, then function result must be included in interval:
+
+$$ t + f(t) \in [t_{min}, t_{max}] $$
+
+If the expression above is true, it means that the result is included in the time window, and the result is correct. 
+If don't, we calculate the result from the maximum and calculate the next time window until we find a match:
+
+$$ t + f(t) \notin [t_{min_n}, t_{max_n}] \longrightarrow f(t_{max_n}); [t_{min_{n+1}}, t_{max_{n+1}}] $$
+
 ## Installation
 
 Install using `pip install regta-period` or `poetry add regta-period`
 
 If you use python < 3.9, then also install backports: `pip install "backports.zoneinfo[tzdata]"`
+
+## Examples
+
+...
 
 ---
 
