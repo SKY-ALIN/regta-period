@@ -13,20 +13,62 @@ utc = datetime_timezone.utc
 
 
 class AbstractPeriod(ABC):
+    """The minimum interface every period object has."""
+
     @abstractmethod
     def get_next_seconds(self, dt: datetime) -> float:
+        """Get seconds to the next moment since passed moment.
+
+        Args:
+            dt (datetime): Current moment (:math:`t`)
+
+        Return:
+            float: Seconds to the next moment (:math:`f(t)`)
+        """
         raise NotImplementedError
 
     @abstractmethod
     def get_next_timedelta(self, dt: datetime) -> timedelta:
+        """Get time to the next moment as timedelta since passed moment.
+
+        Args:
+            dt (datetime): Current moment (:math:`t`)
+
+        Return:
+            timedelta: Interval to the next moment (:math:`f(t)`)
+        """
         raise NotImplementedError
 
     @abstractmethod
     def get_next_datetime(self, dt: datetime) -> datetime:
+        """Get the next moment since passed moment.
+
+        Args:
+            dt (datetime): Current moment (:math:`t`)
+
+        Return:
+            datetime: The next moment (:math:`t + f(t)`)
+        """
         raise NotImplementedError
 
 
 class Period(AbstractPeriod):
+    """The core logic of this module.
+
+    Args:
+        days (int): Amount of days for the regular offset.
+        hours (int): Amount of hours for the regular offset.
+        minutes (int): Amount of minutes for the regular offset.
+        seconds (int): Amount of seconds for the regular offset.
+        milliseconds (int): Amount of milliseconds for the regular offset.
+        time (str): Exact time of moments (time offset). Format: "HH:MM" or "HH:MM:SS".
+        timezone (Union[tzinfo, str, int, float]):
+            Time zone for exact time.
+            If :obj:`str`, then it will be converted into :obj:`tzinfo` via :class:`zoneinfo.ZoneInfo`.
+            If :obj:`int` or :obj:`float`, then it will be used directly as an offset for the time offset.
+        weekdays (Iterable[Weekdays]): Time windows of weekdays.
+    """
+
     _every: int = 1
     _regular_offset: float = 0.0
     _time_offset: int = 0
@@ -59,84 +101,110 @@ class Period(AbstractPeriod):
         self._weekdays = set(weekdays) if weekdays is not None else set()
 
     def every(self, n: int) -> "Period":
+        """Specify a factor for regular offset properties.
+
+        Args:
+            n (int): The factor.
+        """
         self._every = n
         return self
 
     @property
     def seconds(self) -> "Period":
+        """Seconds regular offset property. Must be used only after :attr:`.every` multiplier."""
         self._regular_offset += self._every
         return self
 
     @property
     def minutes(self) -> "Period":
+        """Minutes regular offset property. Must be used only after :attr:`.every` multiplier."""
         self._regular_offset += self._every * 60
         return self
 
     @property
     def hours(self) -> "Period":
+        """Hours regular offset property. Must be used only after :attr:`.every` multiplier."""
         self._regular_offset += self._every * 60 * 60
         return self
 
     @property
     def days(self) -> "Period":
+        """Days regular offset property. Must be used only after :attr:`.every` multiplier."""
         self._regular_offset += self._every * 60 * 60 * 24
         return self
 
     @property
     def hourly(self) -> "Period":
+        """Regular offset = every hour. The same as :code:`.every(1).hours`.
+        Can't be combined with another regular offset.
+        """
         if self._regular_offset:
-            raise ValueError("Can't combine .hourly and other regular interval attributes")
+            raise ValueError("Can't combine .hourly and other regular offset attributes")
         self._regular_offset = 60.0 * 60
         return self
 
     @property
     def daily(self) -> "Period":
+        """Regular offset = every day. The same as :code:`.every(1).days`.
+        Can't be combined with another regular offset.
+        """
         if self._regular_offset:
-            raise ValueError("Can't combine .daily and other regular interval attributes")
+            raise ValueError("Can't combine .daily and other regular offset attributes")
         self._regular_offset = 60.0 * 60 * 24
         return self
 
     @property
     def on(self) -> "Period":
+        """This property does nothing. It's designed only to write better
+        human-readable code, e.g. :code:`.on.monday`.
+        """
         return self
 
     @property
     def monday(self) -> "Period":
+        """Add Monday to the time windows list."""
         self._weekdays.add(Weekdays.MONDAY)
         return self
 
     @property
     def tuesday(self) -> "Period":
+        """Add Tuesday to the time windows list."""
         self._weekdays.add(Weekdays.TUESDAY)
         return self
 
     @property
     def wednesday(self) -> "Period":
+        """Add Wednesday to the time windows list."""
         self._weekdays.add(Weekdays.WEDNESDAY)
         return self
 
     @property
     def thursday(self) -> "Period":
+        """Add Thursday to the time windows list."""
         self._weekdays.add(Weekdays.THURSDAY)
         return self
 
     @property
     def friday(self) -> "Period":
+        """Add Friday to the time windows list."""
         self._weekdays.add(Weekdays.FRIDAY)
         return self
 
     @property
     def saturday(self) -> "Period":
+        """Add Saturday to the time windows list."""
         self._weekdays.add(Weekdays.SATURDAY)
         return self
 
     @property
     def sunday(self) -> "Period":
+        """Add Sunday to the time windows list."""
         self._weekdays.add(Weekdays.SUNDAY)
         return self
 
     @property
     def weekdays(self) -> "Period":
+        """Add weekdays (Monday-Friday) to the time windows list."""
         self._weekdays.update({
             Weekdays.MONDAY,
             Weekdays.TUESDAY,
@@ -148,6 +216,7 @@ class Period(AbstractPeriod):
 
     @property
     def weekends(self) -> "Period":
+        """Add weekends (Saturday-Sunday) to the time windows list."""
         self._weekdays.update({Weekdays.SATURDAY, Weekdays.SUNDAY})
         return self
 
@@ -169,13 +238,18 @@ class Period(AbstractPeriod):
         checking_delimiter = (24 * 60 * 60)
         if self._regular_offset % checking_delimiter:
             raise ValueError(
-                "Can't combine .at method and regular interval. Regular interval is too small. "
-                "Don't combine intervals which are < days with .at time method."
+                "Can't combine .at method and too small regular offset. "
+                "Don't combine attributes which are < day with .at time method."
             )
 
         self._time_offset = hour * 60 * 60 + minute * 60 + second
 
     def at(self, time: str) -> "Period":
+        """Specify the moment exact time (time offset, :math:`\Delta t_{time}`).
+
+        Args:
+            time (str): Exact time. Format: "HH:MM" or "HH:MM:SS".
+        """
         self._set_time_offset(*self._parse_time(time))
         return self
 
@@ -190,6 +264,14 @@ class Period(AbstractPeriod):
             raise ValueError("Unsupported timezone type")
 
     def by(self, timezone: Union[tzinfo, str, int, float]) -> "Period":
+        """Specify the time zone for the exact time.
+
+        Args:
+            timezone (Union[tzinfo, str, int, float]):
+                Time zone.
+                If :obj:`str`, then it will be converted into :obj:`tzinfo` via :class:`zoneinfo.ZoneInfo`.
+                If :obj:`int` or :obj:`float`, then it will be used directly as an offset for the time offset.
+        """
         self._set_timezone(timezone)
         return self
 
@@ -221,28 +303,42 @@ class Period(AbstractPeriod):
 
     @property
     def AND(self) -> "Period":
+        """This property does nothing. It's designed only to write better
+        human-readable code, e.g. :code:`.on.monday.AND.tuesday`.
+        It's uppercase because :code:`and` is a reserved word in python.
+        """
         return self
 
     @property
     def OR(self) -> "PeriodAggregation":
+        """Create :class:`PeriodAggregation` from this period and a new empty period.
+
+        It's designed to write better human-readable code,
+        e.g. :code:`.on.weekdays.at("18:00").OR.on.weekends.at("21:00")`.
+        It's uppercase because :code:`or` is a reserved word in python.
+        """
         return PeriodAggregation(self, Period())
 
     def __add__(self, other: "Period") -> "Period":
+        """Combine periods as a sum of regular offset and time windows.
+        Can't sum objects with a different time offset and time zone.
+        """
         if self._time_offset != other._time_offset:
             raise ValueError(
-                "Can't sum periods with different time. "
+                "Can't sum periods with a different time. "
                 "Hint: try to use | instead"
             )
         if self._timezone != other._timezone or self._timezone_offset != other._timezone_offset:
             raise ValueError(
-                "Can't sum periods with different timezone. "
-                "Hint: try to use operator `|` or property `.OR` instead"
+                "Can't sum periods with a different timezone. "
+                "Hint: try to use an operator `|` or property `.OR` instead"
             )
         self._regular_offset += other._regular_offset
         self._weekdays.update(other._weekdays)
         return self
 
     def __or__(self, other: Union["Period", "PeriodAggregation"]) -> "PeriodAggregation":
+        """Create new :class:`PeriodAggregation` from this period and the passed period."""
         if isinstance(other, Period):
             return PeriodAggregation(self, other)
         return PeriodAggregation(self, *other.periods)
@@ -264,6 +360,18 @@ class Period(AbstractPeriod):
 
 
 class PeriodAggregation(AbstractPeriod):
+    """Aggregation class for :class:`Period`.
+
+    It contains the logic of how to get the nearest time moment and add data into
+    the last period object.
+
+    Args:
+        *periods (Tuple[Period]): Periods to aggregate.
+
+    Attributes:
+        periods (Tuple[Period]): Aggregated periods.
+    """
+
     def __init__(self, *periods: Period):
         if not periods:
             raise ValueError("No period has been passed")
@@ -280,17 +388,32 @@ class PeriodAggregation(AbstractPeriod):
 
     @property
     def OR(self) -> "PeriodAggregation":
+        """Create a new :class:`PeriodAggregation` from these periods of
+        aggregation and a new empty period.
+
+        It's designed to write better human-readable code,
+        e.g. :code:`.on.weekdays.at("18:00").OR.on.weekends.at("21:00")`.
+        It's uppercase because :code:`or` is a reserved word in python.
+        """
         return PeriodAggregation(*self.periods, Period())
 
     def __or__(self, other: Union["Period", "PeriodAggregation"]) -> "PeriodAggregation":
+        """Create a new :class:`PeriodAggregation` from these periods of
+        aggregation and the passed period."""
         if isinstance(other, Period):
             return PeriodAggregation(*self.periods, other)
         return PeriodAggregation(*self.periods, *other.periods)
 
     def __dir__(self) -> Iterable[str]:
+        """Extended implementation of the standard.
+        It adds attributes of :class:`Period` class.
+        """
         return sorted(set(dir(PeriodAggregation)) | set(dir(Period)))
 
     def __getattr__(self, attr):
+        """Return an attribute of the last period in the list of periods with
+        a wrap to return this object instead of the last period.
+        """
         _attr = getattr(self.periods[-1], attr)
 
         if isinstance(getattr(Period, attr), property):
