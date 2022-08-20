@@ -86,19 +86,20 @@ If you use python < 3.9, then also install backports: `pip install "backports.zo
 There are two ways to create periods: old style and hipster style:
 
 ```python
-from datetime import datetime, timezone
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from regta_period import Period
 
 # Hipster style
 p = Period().every(3).days.at("17:00").by("Europe/Moscow")
 
 # Old style
-p = Period(days=3, time="17:00", timezone="Europe/Moscow")
+p = Period(days=3, time="17:00", timezone=ZoneInfo("Europe/Moscow"))
 
 # <Period: regular_offset=259200.0s, time_offset=61200s, timezone=Europe/Moscow>
 # Every 3 days at 5 pm by Moscow time
 
-t = datetime.now(tz=timezone.utc)
+t = datetime.now(tz=ZoneInfo("Europe/Moscow"))
 seconds_to_the_next_moment = p.get_next_seconds(t)
 ```
 
@@ -110,7 +111,7 @@ from regta_period import Period, PeriodAggregation, Weekdays
 
 # Hipster style
 p = Period().on.weekdays.at("18:00") | Period().on.weekends.at("21:00")
-# You also may replace `|` with `.OR` to write shorter and more human-readable
+# You also may replace `|` with `.OR` to write shorter and more human-readable code
 p = Period().on.weekdays.at("18:00").OR.on.weekends.at("21:00")
 
 # Old style:
