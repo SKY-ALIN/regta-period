@@ -1,4 +1,4 @@
-## 0.1.0 (??.08.2022)
+## 0.1.0 (22.08.2022)
 * Add `regta_period.AbstractPeriod`
   * `.get_next`
   * `.get_interval`

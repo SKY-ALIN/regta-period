@@ -1,15 +1,18 @@
 [tool.poetry]
 name = "regta-period"
-version = "0.0.0"
-description = "Time-independent periods python package"
+version = "0.1.0"
+description = "Moment-independent periods"
 authors = ["Vladimir Alinsky <Vladimir@Alinsky.tech>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/SKY-ALIN/regta-period"
+homepage = "https://regta-period.alinsky.tech"
 repository = "https://github.com/SKY-ALIN/regta-period"
-keywords = ["time-independent", "periods"]
+keywords = ["time", "intervals", "periods", "regta"]
+include = [
+    "LICENSE",
+]
 classifiers = [
-    "Development Status :: 1 - Planning",
+    "Development Status :: 5 - Production/Stable",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",

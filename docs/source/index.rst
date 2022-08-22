@@ -155,7 +155,7 @@ There are two ways to create periods: old school style and hipster style:
     # Every 3 days at 5 pm by Moscow time
 
     t = datetime.now(tz=ZoneInfo("Europe/Moscow"))
-    next_moment = p.get_next(t)  # f(t) + t
+    next_moment: datetime = p.get_next(t)  # f(t) + t
 
 You also may combine a few periods to a single object with the same interface:
 
