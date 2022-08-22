@@ -4,9 +4,8 @@ from regta_period import Period, PeriodAggregation
 
 
 def _assert(p: PeriodAggregation, dt):
-    assert p.get_next_datetime(dt) == datetime(year=1970, month=1, day=1, hour=11, minute=0, second=0)
-    assert p.get_next_timedelta(dt) == timedelta(hours=11)
-    assert p.get_next_seconds(dt) == (11 * 60 * 60)
+    assert p.get_next(dt) == datetime(year=1970, month=1, day=1, hour=11, minute=0, second=0)
+    assert p.get_interval(dt) == timedelta(hours=11)
 
 
 def test_direct_creation(unix: datetime):

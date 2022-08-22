@@ -16,19 +16,7 @@ class AbstractPeriod(ABC):
     """The minimum interface every period object has."""
 
     @abstractmethod
-    def get_next_seconds(self, dt: datetime) -> float:
-        """Get seconds to the next moment since passed moment.
-
-        Args:
-            dt (datetime): Current moment (:math:`t`)
-
-        Return:
-            float: Seconds to the next moment (:math:`f(t)`)
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_next_timedelta(self, dt: datetime) -> timedelta:
+    def get_interval(self, dt: datetime) -> timedelta:
         """Get time to the next moment as timedelta since passed moment.
 
         Args:
@@ -40,7 +28,7 @@ class AbstractPeriod(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_next_datetime(self, dt: datetime) -> datetime:
+    def get_next(self, dt: datetime) -> datetime:
         """Get the next moment since passed moment.
 
         Args:
@@ -282,7 +270,7 @@ class Period(AbstractPeriod):
             return datetime.fromtimestamp(self._time_offset - self._timezone_offset, tz=utc)
         return datetime.utcfromtimestamp(self._time_offset)
 
-    def get_next_datetime(self, dt: datetime) -> datetime:
+    def get_next(self, dt: datetime) -> datetime:
         delta_t = (dt - self._get_initial_datetime()).total_seconds()
         # if _regular_offset is not specified, calculate as .daily
         regular_offset = self._regular_offset or 60.0 * 60 * 24
@@ -291,15 +279,12 @@ class Period(AbstractPeriod):
         res = dt + timedelta(seconds=next_seconds)
 
         if self._weekdays and Weekdays.get(res) not in self._weekdays:
-            return self.get_next_datetime(res)
+            return self.get_next(res)
 
         return res
 
-    def get_next_timedelta(self, dt: datetime) -> timedelta:
-        return self.get_next_datetime(dt) - dt
-
-    def get_next_seconds(self, dt: datetime) -> float:
-        return self.get_next_timedelta(dt).total_seconds()
+    def get_interval(self, dt: datetime) -> timedelta:
+        return self.get_next(dt) - dt
 
     @property
     def AND(self) -> "Period":
@@ -377,14 +362,11 @@ class PeriodAggregation(AbstractPeriod):
             raise ValueError("No period has been passed")
         self.periods = periods
 
-    def get_next_datetime(self, dt: datetime) -> datetime:
-        return min(map(lambda period: period.get_next_datetime(dt), self.periods))
+    def get_next(self, dt: datetime) -> datetime:
+        return min(map(lambda period: period.get_next(dt), self.periods))
 
-    def get_next_timedelta(self, dt: datetime) -> timedelta:
-        return self.get_next_datetime(dt) - dt
-
-    def get_next_seconds(self, dt: datetime) -> float:
-        return self.get_next_timedelta(dt).total_seconds()
+    def get_interval(self, dt: datetime) -> timedelta:
+        return self.get_next(dt) - dt
 
     @property
     def OR(self) -> "PeriodAggregation":

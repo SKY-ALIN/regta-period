@@ -38,7 +38,7 @@ points regardless of the points in which we are.
                      |--------|
 
 
-Whereas with the standard intervals like `datetime.timedelta`, we get an unnecessary offset:
+Whereas with the standard intervals like :code:`datetime.timedelta`, we get an unnecessary offset:
 
 .. code-block::
 
@@ -137,7 +137,7 @@ If you use python < 3.9, then also install backports: :code:`pip install "backpo
 Examples
 --------
 
-There are two ways to create periods: old style and hipster style:
+There are two ways to create periods: old school style and hipster style:
 
 .. code-block:: python
 
@@ -148,14 +148,14 @@ There are two ways to create periods: old style and hipster style:
     # Hipster style
     p = Period().every(3).days.at("17:00").by("Europe/Moscow")
 
-    # Old style
+    # Old school style
     p = Period(days=3, time="17:00", timezone=ZoneInfo("Europe/Moscow"))
 
     # <Period: regular_offset=259200.0s, time_offset=61200s, timezone=Europe/Moscow>
     # Every 3 days at 5 pm by Moscow time
 
     t = datetime.now(tz=ZoneInfo("Europe/Moscow"))
-    seconds_to_the_next_moment = p.get_next_seconds(t)
+    next_moment = p.get_next(t)  # f(t) + t
 
 You also may combine a few periods to a single object with the same interface:
 
@@ -169,7 +169,7 @@ You also may combine a few periods to a single object with the same interface:
     # You also may replace `|` with `.OR` to write shorter and more human-readable code
     p = Period().on.weekdays.at("18:00").OR.on.weekends.at("21:00")
 
-    # Old style:
+    # Old school style
     p = PeriodAggregation(
         Period(
             weekdays=[Weekdays.MONDAY, Weekdays.TUESDAY, Weekdays.WEDNESDAY, Weekdays.THURSDAY, Weekdays.FRIDAY],
@@ -181,12 +181,12 @@ You also may combine a few periods to a single object with the same interface:
         ),
     )
 
-    # All of the above will give the same result:
+    # All of the above give the same result:
     # <PeriodAggregation: <Period: regular_offset=86400.0s, time_offset=64800s, weekdays=Tuesday,Monday,Thursday,Wednesday,Friday> OR <Period: regular_offset=86400.0s, time_offset=75600s, weekdays=Sunday,Saturday>>
     # At 6 pm on weekdays (Monday-Friday) and at 9 pm on weekends (Saturday-Sunday)
 
     t = datetime.now()
-    seconds_to_the_next_moment = p.get_next_seconds(t)
+    timedelta_to_the_next_moment = p.get_interval(t)  # f(t)
 
 
 

@@ -4,10 +4,10 @@ from regta_period import Period
 
 
 def _assert(p_utc: Period, p_tomsk: Period, dt_utc: datetime, dt_tomsk: datetime):
-    assert p_utc.get_next_timedelta(dt_utc) == timedelta(hours=1, minutes=30)  # UTC and UTC
-    assert p_utc.get_next_timedelta(dt_tomsk) == timedelta(hours=8, minutes=30)  # UTC and UTC+7
-    assert p_tomsk.get_next_timedelta(dt_utc) == timedelta(hours=18, minutes=30)  # UTC+7 and UTC
-    assert p_tomsk.get_next_timedelta(dt_tomsk) == timedelta(hours=1, minutes=30)  # UTC+7 and UTC+7
+    assert p_utc.get_interval(dt_utc) == timedelta(hours=1, minutes=30)  # UTC and UTC
+    assert p_utc.get_interval(dt_tomsk) == timedelta(hours=8, minutes=30)  # UTC and UTC+7
+    assert p_tomsk.get_interval(dt_utc) == timedelta(hours=18, minutes=30)  # UTC+7 and UTC
+    assert p_tomsk.get_interval(dt_tomsk) == timedelta(hours=1, minutes=30)  # UTC+7 and UTC+7
 
 
 def test_timezone_with_exact_time(utc, utc7):

@@ -29,18 +29,18 @@ def test_correct_combination_of_time_and_interval():
 def test_at_time(unix: datetime):
     p = Period().every(3).days.at("12:00")
     moment = datetime(year=1970, month=1, day=1, hour=12, minute=0, second=0)
-    assert p.get_next_datetime(unix) == moment
+    assert p.get_next(unix) == moment
     next_moment = datetime(year=1970, month=1, day=1+3, hour=12, minute=0, second=0)
-    assert p.get_next_datetime(moment) == next_moment
+    assert p.get_next(moment) == next_moment
     moment = next_moment
     next_moment = datetime(year=1970, month=1, day=1+6, hour=12, minute=0, second=0)
-    assert p.get_next_datetime(moment) == next_moment
+    assert p.get_next(moment) == next_moment
 
     p = Period().every(7).days.at("16:30:30")
     moment = datetime(year=1970, month=1, day=1, hour=16, minute=30, second=30)
-    assert p.get_next_datetime(unix) == moment
+    assert p.get_next(unix) == moment
     next_moment = datetime(year=1970, month=1, day=1+7, hour=16, minute=30, second=30)
-    assert p.get_next_datetime(moment) == next_moment
+    assert p.get_next(moment) == next_moment
     moment = next_moment
     next_moment = datetime(year=1970, month=1, day=1+14, hour=16, minute=30, second=30)
-    assert p.get_next_datetime(moment) == next_moment
+    assert p.get_next(moment) == next_moment

@@ -1,8 +1,7 @@
 ## 0.1.0 (??.08.2022)
 * Add `regta_period.AbstractPeriod`
-  * `.get_next_datetime`
-  * `.get_next_timedelta`
-  * `.get_next_seconds`
+  * `.get_next`
+  * `.get_interval`
 * Add `regta_period.Period`
   * `.every`
   * `.seconds`
@@ -23,18 +22,16 @@
   * `.weekends`
   * `.at`
   * `.by`
-  * `.get_next_datetime`
-  * `.get_next_timedelta`
-  * `.get_next_seconds`
+  * `.get_next`
+  * `.get_interval`
   * `.AND`
   * `.OR`
   * `.__add__`
   * `.__or__`
   * `.__repr__`
 * Add `regta_period.PeriodAggregation`
-  * `.get_next_datetime`
-  * `.get_next_timedelta`
-  * `.get_next_seconds`
+  * `.get_next`
+  * `.get_interval`
   * `.OR`
   * `.__or__`
   * `.__dir__`

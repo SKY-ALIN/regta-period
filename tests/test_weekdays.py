@@ -18,19 +18,19 @@ def test_creation():
 def test_calculations():
     dt = datetime(2022, 7, 24, 0, 0, 0, 0)
     p1 = Period().on.monday.at("14:30")
-    assert p1.get_next_datetime(dt) == datetime(2022, 7, 25, 14, 30, 0, 0)
+    assert p1.get_next(dt) == datetime(2022, 7, 25, 14, 30, 0, 0)
     p2 = Period().on.tuesday.at("14:30")
-    assert p2.get_next_datetime(dt) == datetime(2022, 7, 26, 14, 30, 0, 0)
+    assert p2.get_next(dt) == datetime(2022, 7, 26, 14, 30, 0, 0)
     p2 = Period().on.wednesday.at("14:30")
-    assert p2.get_next_datetime(dt) == datetime(2022, 7, 27, 14, 30, 0, 0)
+    assert p2.get_next(dt) == datetime(2022, 7, 27, 14, 30, 0, 0)
     p2 = Period().on.thursday.at("14:30")
-    assert p2.get_next_datetime(dt) == datetime(2022, 7, 28, 14, 30, 0, 0)
+    assert p2.get_next(dt) == datetime(2022, 7, 28, 14, 30, 0, 0)
     p2 = Period().on.friday.at("14:30")
-    assert p2.get_next_datetime(dt) == datetime(2022, 7, 29, 14, 30, 0, 0)
+    assert p2.get_next(dt) == datetime(2022, 7, 29, 14, 30, 0, 0)
     p2 = Period().on.saturday.at("14:30")
-    assert p2.get_next_datetime(dt) == datetime(2022, 7, 30, 14, 30, 0, 0)
+    assert p2.get_next(dt) == datetime(2022, 7, 30, 14, 30, 0, 0)
     p2 = Period().on.sunday.at("14:30")
-    assert p2.get_next_datetime(dt) == datetime(2022, 7, 24, 14, 30, 0, 0)
+    assert p2.get_next(dt) == datetime(2022, 7, 24, 14, 30, 0, 0)
 
 
 def test_weekdays_and_weekends():
