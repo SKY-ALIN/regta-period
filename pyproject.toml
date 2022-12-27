@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "regta-period"
-version = "0.1.0"
+version = "0.2.0"
 description = "Moment-independent periods"
 authors = ["Vladimir Alinsky <Vladimir@Alinsky.tech>"]
 license = "MIT"

@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 project = 'regta-period'
 copyright = '2022, Vladimir Alinsky'
 author = 'Vladimir Alinsky'
-release = '0.1.0'
+release = '0.2.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
