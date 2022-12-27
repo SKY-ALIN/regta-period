@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 try:
     import zoneinfo
 except ImportError:  # Backward compatibility for python < 3.9
-    from backports import zoneinfo
+    from backports import zoneinfo  # type: ignore
 
 import pytest
 

@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone as datetime_timezone, tzinfo
 try:
     import zoneinfo
 except ImportError:  # Backward compatibility for python < 3.9
-    from backports import zoneinfo
+    from backports import zoneinfo  # type: ignore
 
 from .enums import Weekdays
 
@@ -63,7 +63,7 @@ class Period(AbstractPeriod):
     _time_offset: int = 0
     _timezone_offset: Union[int, None] = None
     _timezone: Union[tzinfo, None] = None
-    _weekdays: Union[Set[Weekdays], None] = None
+    _weekdays: Set[Weekdays]
 
     def __init__(
             self,

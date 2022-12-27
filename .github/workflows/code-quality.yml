@@ -44,3 +44,4 @@ jobs:
         source .venv/bin/activate
         flake8 regta_period
         find . -iname "*.py" -not -path "./.venv/*" -not -path "./docs/*" | xargs pylint
+        mypy regta_period

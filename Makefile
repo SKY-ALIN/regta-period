@@ -6,6 +6,7 @@ isort: # Sort import statements
 lint: # Check code quality
 	flake8 regta_period
 	find . -iname "*.py" -not -path "./.venv/*" -not -path "./docs/*" | xargs pylint
+	mypy regta_period
 test: # Run tests
 	pytest --cov=regta_period tests/ -v
 html_docs: # Build html docs
