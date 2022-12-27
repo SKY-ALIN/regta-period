@@ -1,5 +1,6 @@
-from datetime import datetime
 from typing import Callable
+
+from datetime import datetime
 
 from regta_period import Period
 

@@ -1,6 +1,7 @@
+from typing import Dict, Iterable, Set, Tuple, Union
+
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta, tzinfo, timezone as datetime_timezone
-from typing import Dict, Tuple, Optional, Union, Set, Iterable
+from datetime import datetime, timedelta, timezone as datetime_timezone, tzinfo
 
 try:
     import zoneinfo
@@ -60,9 +61,9 @@ class Period(AbstractPeriod):
     _every: int = 1
     _regular_offset: float = 0.0
     _time_offset: int = 0
-    _timezone_offset: Optional[int] = None
-    _timezone: Optional[tzinfo] = None
-    _weekdays: Optional[Set[Weekdays]] = None
+    _timezone_offset: Union[int, None] = None
+    _timezone: Union[tzinfo, None] = None
+    _weekdays: Union[Set[Weekdays], None] = None
 
     def __init__(
             self,
@@ -71,9 +72,9 @@ class Period(AbstractPeriod):
             minutes: int = 0,
             seconds: int = 0,
             milliseconds: int = 0,
-            time: Optional[str] = None,
-            timezone: Optional[Union[tzinfo, str, int, float]] = None,
-            weekdays: Optional[Iterable[Weekdays]] = None,
+            time: Union[str, None] = None,
+            timezone: Union[tzinfo, str, int, float, None] = None,
+            weekdays: Union[Iterable[Weekdays], None] = None,
     ):
         self._regular_offset = (
             milliseconds * 0.001

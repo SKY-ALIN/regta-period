@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from regta_period.enums import Weekdays
 
 
