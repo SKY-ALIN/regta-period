@@ -9,6 +9,9 @@ def _assert(p_utc: Period, p_tomsk: Period, dt_utc: datetime, dt_tomsk: datetime
     assert p_tomsk.get_interval(dt_utc) == timedelta(hours=18, minutes=30)  # UTC+7 and UTC
     assert p_tomsk.get_interval(dt_tomsk) == timedelta(hours=1, minutes=30)  # UTC+7 and UTC+7
 
+    assert p_utc.is_timezone_in_use is True
+    assert p_tomsk.is_timezone_in_use is True
+
 
 def test_timezone_with_exact_time(utc, utc7):
     p_utc = Period(days=1).at("10:30").by(utc)

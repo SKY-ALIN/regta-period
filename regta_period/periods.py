@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta, timezone as datetime_timezone, tzinfo
 
 try:
-    import zoneinfo
+    import zoneinfo  # type: ignore
 except ImportError:  # Backward compatibility for python < 3.9
     from backports import zoneinfo  # type: ignore
 
@@ -38,6 +38,11 @@ class AbstractPeriod(ABC):
         Return:
             datetime: The next moment (:math:`t + f(t)`)
         """
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def is_timezone_in_use(self) -> bool:
         raise NotImplementedError
 
 
@@ -288,6 +293,10 @@ class Period(AbstractPeriod):
         return self.get_next(dt) - dt
 
     @property
+    def is_timezone_in_use(self) -> bool:
+        return self._timezone is not None or self._timezone_offset is not None
+
+    @property
     def AND(self) -> "Period":
         """This property does nothing. It's designed only to write better
         human-readable code, e.g. :code:`.on.monday.AND.tuesday`.
@@ -368,6 +377,10 @@ class PeriodAggregation(AbstractPeriod):
 
     def get_interval(self, dt: datetime) -> timedelta:
         return self.get_next(dt) - dt
+
+    @property
+    def is_timezone_in_use(self) -> bool:
+        return any(map(lambda period: period.is_timezone_in_use, self.periods))
 
     @property
     def OR(self) -> "PeriodAggregation":
