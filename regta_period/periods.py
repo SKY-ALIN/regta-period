@@ -43,6 +43,7 @@ class AbstractPeriod(ABC):
     @property
     @abstractmethod
     def is_timezone_in_use(self) -> bool:
+        """If timezone is specified, return True, else False."""
         raise NotImplementedError
 
 
