@@ -1,11 +1,12 @@
+from typing import Dict, Iterable, Set, Tuple, Union
+
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta, tzinfo, timezone as datetime_timezone
-from typing import Dict, Tuple, Optional, Union, Set, Iterable
+from datetime import datetime, timedelta, timezone as datetime_timezone, tzinfo
 
 try:
-    import zoneinfo
+    import zoneinfo  # type: ignore
 except ImportError:  # Backward compatibility for python < 3.9
-    from backports import zoneinfo
+    from backports import zoneinfo  # type: ignore
 
 from .enums import Weekdays
 
@@ -39,6 +40,12 @@ class AbstractPeriod(ABC):
         """
         raise NotImplementedError
 
+    @property
+    @abstractmethod
+    def is_timezone_in_use(self) -> bool:
+        """If timezone is specified, return True, else False."""
+        raise NotImplementedError
+
 
 class Period(AbstractPeriod):
     """The core logic of this module.
@@ -60,9 +67,9 @@ class Period(AbstractPeriod):
     _every: int = 1
     _regular_offset: float = 0.0
     _time_offset: int = 0
-    _timezone_offset: Optional[int] = None
-    _timezone: Optional[tzinfo] = None
-    _weekdays: Optional[Set[Weekdays]] = None
+    _timezone_offset: Union[int, None] = None
+    _timezone: Union[tzinfo, None] = None
+    _weekdays: Set[Weekdays]
 
     def __init__(
             self,
@@ -71,9 +78,9 @@ class Period(AbstractPeriod):
             minutes: int = 0,
             seconds: int = 0,
             milliseconds: int = 0,
-            time: Optional[str] = None,
-            timezone: Optional[Union[tzinfo, str, int, float]] = None,
-            weekdays: Optional[Iterable[Weekdays]] = None,
+            time: Union[str, None] = None,
+            timezone: Union[tzinfo, str, int, float, None] = None,
+            weekdays: Union[Iterable[Weekdays], None] = None,
     ):
         self._regular_offset = (
             milliseconds * 0.001
@@ -287,6 +294,10 @@ class Period(AbstractPeriod):
         return self.get_next(dt) - dt
 
     @property
+    def is_timezone_in_use(self) -> bool:
+        return self._timezone is not None or self._timezone_offset is not None
+
+    @property
     def AND(self) -> "Period":
         """This property does nothing. It's designed only to write better
         human-readable code, e.g. :code:`.on.monday.AND.tuesday`.
@@ -367,6 +378,10 @@ class PeriodAggregation(AbstractPeriod):
 
     def get_interval(self, dt: datetime) -> timedelta:
         return self.get_next(dt) - dt
+
+    @property
+    def is_timezone_in_use(self) -> bool:
+        return any(map(lambda period: period.is_timezone_in_use, self.periods))
 
     @property
     def OR(self) -> "PeriodAggregation":

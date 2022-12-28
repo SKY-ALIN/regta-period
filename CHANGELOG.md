@@ -1,3 +1,9 @@
+## 0.2.0 (28.12.2022)
+* Add Python 3.11 support
+* Add `AbstractPeriod.is_timezone_in_use`
+* Add `Period.is_timezone_in_use`
+* Add `PeriodAggregation.is_timezone_in_use`
+
 ## 0.1.0 (22.08.2022)
 * Add `regta_period.AbstractPeriod`
   * `.get_next`

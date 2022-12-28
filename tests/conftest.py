@@ -1,8 +1,9 @@
 from datetime import datetime, timezone
+
 try:
-    import zoneinfo
+    import zoneinfo  # type: ignore
 except ImportError:  # Backward compatibility for python < 3.9
-    from backports import zoneinfo
+    from backports import zoneinfo  # type: ignore
 
 import pytest
 
