@@ -230,7 +230,7 @@ class Period(AbstractPeriod):
         return hour, minute, second
 
     def _set_time_offset(self, hour: int, minute: int, second: int) -> None:
-        checking_delimiter = (24 * 60 * 60)
+        checking_delimiter = 24 * 60 * 60
         if self._regular_offset % checking_delimiter:
             raise ValueError(
                 "Can't combine .at method and too small regular offset. "
